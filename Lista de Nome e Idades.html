@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+
+  <style>
+    body {background-color: whitesmoke;}
+    .form-control{
+        max-width: 30%;
+    }
+    #Lista{
+        margin-left: 9%;
+        margin-bottom: 5%;
+        width: 60%;
+    }
+    #Salvar{
+        margin-left: 9%;
+        margin-bottom: 5%;
+    }
+    .NomeListaClasse{
+        margin-left: 15px;
+        border:none;
+    }
+    .IdadeListaClasse{
+        margin-left: 15px;
+        border:none;
+    }
+    .btn-primary{
+        margin-bottom: 10px;
+    }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Lista de nomes e Idades:</h2>
+        <form>
+          <div class="form-group">
+            <label for="Nome">Nome:</label>
+            <input type="text" class="form-control" id="Nome">
+          </div>
+          <div class="form-group">
+            <label for="Idade">Idade:</label>
+            <input type="text" class="form-control" id="Idade">
+          </div>
+        </form>
+      </div>
+      <button type="button" class="btn btn-primary" id="Salvar">Salvar</button>
+      <table id="Lista" class="sortable">
+      <thead>
+        <tr>
+          <th class="col-md-4" data-field="Nome" data-editable="true">Nome</th>
+         <th id="IdadeCol" class="col-md-7" data-field="Idade"  data-sortable="true" data-editable="true" data-editable-emptytext="Custom empty text.">Idade</th>
+          <th class="col-md-1" data-field="id" data-sortable="true" data-align="center"></th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+</body>
+</html>
+<script type="text/javascript">
+var Count = 0;
+var NomeSalvo = "";
+var IdadeSalva = "";
+$(window).on('load', function() {
+
+    $("#Salvar").click(function(){ 
+
+        if (isNaN($('#Idade').val())) {
+            alert("Insira uma idade válida");
+        }
+        else{
+            var found = false;
+    $(".NomeListaClasse").each(function(){
+        if($('#Nome').val() == $(this).val()){
+            found =true;
+        }
+})
+if(found == false){
+    var CurrentRow = "Row" + Count;
+    var EditRow = "Edit" + Count;
+    var NomeRow = "NomeLista" + Count;
+    var IdadeRow = "IdadeLista" + Count; 
+    var CancelRow = "Cancel" + Count; 
+    $('#Lista').append('<tr id='+ CurrentRow + '><td><input type="text" class="NomeListaClasse" value="' +  $('#Nome').val() +'" id="' + NomeRow + '" readonly ></td><td><input type="text"  Class="IdadeListaClasse" onkeypress="return isNumber(event)" value="' + $('#Idade').val() +'" id="' + IdadeRow + '" readonly></td><td style="display: flex;gap: 25px;"><button  style="display: none;" type="button" class="btn btn-primary" onclick="Cancelar(' + NomeRow + ','+IdadeRow + ','+ EditRow + ','+ CancelRow + ')"  id="' + CancelRow + '">Cancelar</button><button type="button" class="btn btn-primary" onclick="Editar(' + NomeRow + ','+IdadeRow + ','+ EditRow + ','+ CancelRow +' )"  id="' + EditRow + '">Editar</button><button type="button" onclick="Excluir(' + CurrentRow + ')" class="btn btn-primary" id="Excluir">Excluir</button></td><tr>');
+    Count =Count + 1;
+    $('#IdadeCol').trigger('click');
+   
+}
+else{
+    alert("Valor já existente na lista:" + $('#Nome').val());
+}
+        }
+ });
+});
+
+function Excluir(currentrow)
+{
+  if (confirm('Deseja apagar esta linha ?')) 
+  {
+    $(currentrow).remove();
+   }
+}
+
+function Editar(nomerow,idaderow,editrow,cancelrow)
+{
+    if($(editrow).text() == "Editar"){
+        $(nomerow).attr("readonly", false); 
+        $(idaderow).attr("readonly", false); 
+        $(editrow).text("Salvar");
+        $(cancelrow).css("display","block");
+        NomeSalvo =  $(nomerow).val();
+        IdadeSalva = $(idaderow).val();
+    }
+    else{
+        $(nomerow).attr("readonly", true); 
+        $(idaderow).attr("readonly", true); 
+        $(editrow).text("Editar");
+        $(cancelrow).css("display","none");
+    }
+}
+
+function Cancelar(nomerow,idaderow,editrow,cancelrow)
+{
+        $(nomerow).val(NomeSalvo); 
+        $(idaderow).val(IdadeSalva); 
+        $(nomerow).attr("readonly", true); 
+        $(idaderow).attr("readonly", true); 
+        $(editrow).text("Editar");
+        $(cancelrow).css("display","none");
+        nomesalvo = "";
+        IdadeSalva = "";
+}
+function isNumber(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+}
+
+</script>
